@@ -81,7 +81,8 @@ defmodule EventStore.Config do
     :pool_size,
     :queue_target,
     :queue_interval,
-    :socket_options
+    :socket_options,
+    :maintenance_database
   ]
 
   def default_postgrex_opts(config) do

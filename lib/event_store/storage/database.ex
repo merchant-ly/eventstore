@@ -1,6 +1,8 @@
 defmodule EventStore.Storage.Database do
   @moduledoc false
 
+  @default_maintenance_database "postgres"
+
   require Logger
 
   def create(config), do: storage_up(config)
@@ -89,7 +91,8 @@ defmodule EventStore.Storage.Database do
         raise ":database is nil in repository configuration"
 
     encoding = opts[:encoding] || "UTF8"
-    opts = Keyword.put(opts, :database, "postgres")
+    maintenance_database = Keyword.get(opts, :maintenance_database, @default_maintenance_database)
+    opts = Keyword.put(opts, :database, maintenance_database)
 
     command =
       ~s(CREATE DATABASE "#{database}" ENCODING '#{encoding}')
@@ -117,7 +120,8 @@ defmodule EventStore.Storage.Database do
       Keyword.fetch!(opts, :database) || raise ":database is nil in repository configuration"
 
     command = "DROP DATABASE \"#{database}\""
-    opts = Keyword.put(opts, :database, "postgres")
+    maintenance_database = Keyword.get(opts, :maintenance_database, @default_maintenance_database)
+    opts = Keyword.put(opts, :database, maintenance_database)
 
     case run_query(command, opts) do
       {:ok, _} ->
